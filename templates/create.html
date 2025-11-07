@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Crear Trabalho{% endblock %}
+
+{% block content %}
+<section class="create-vacancy">
+    <div class="form-container">
+        <h1>Create New Job Vacancy</h1>
+        <form action="" method="post" enctype="multipart/form-data">
+            <!-- Company Logo -->
+            <div class="form-group">
+                <label for="logo">Company Logo</label>
+                <input type="file" name="logo" id="logo" accept="image/*" class="file-input">
+                <div class="file-preview" id="logo-preview"></div>
+            </div>
+
+            <!-- Company Information -->
+            <div class="form-group">
+                <label for="company-name">Company Name</label>
+                <input type="text" name="company-name" id="company-name" placeholder="Enter company name" required>
+            </div>
+
+            <!-- Job Details -->
+            <div class="form-group">
+                <label for="job-title">Job Title</label>
+                <input type="text" name="job-title" id="job-title" placeholder="e.g. Senior PHP Developer" required>
+            </div>
+
+            <div class="form-group">
+                <label for="job-description">Job Description</label>
+                <textarea name="job-description" id="job-description" placeholder="Describe the job responsibilities and requirements..." rows="5" required></textarea>
+            </div>
+
+            <!-- Job Location & Type -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="location">Location</label>
+                    <input type="text" name="location" id="location" placeholder="e.g. Camama, Luanda">
+                </div>
+                <div class="form-group">
+                    <label for="job-type">Job Type</label>
+                    <select name="job-type" id="job-type">
+                        <option value="full-time">Full-time</option>
+                        <option value="part-time">Part-time</option>
+                        <option value="contract">Contract</option>
+                        <option value="remote">Remote</option>
+                        <option value="hybrid">Hybrid</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Salary Information -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="salary-min">Salary Range (Min)</label>
+                    <input type="number" name="salary-min" id="salary-min" placeholder="e.g. 2500">
+                </div>
+                <div class="form-group">
+                    <label for="salary-max">Salary Range (Max)</label>
+                    <input type="number" name="salary-max" id="salary-max" placeholder="e.g. 3500">
+                </div>
+                <div class="form-group">
+                    <label for="currency">Currency</label>
+                    <select name="currency" id="currency">
+                        <option value="EUR">AOA </option>
+                        <option value="USD">USD $</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Contact Information -->
+            <div class="form-group">
+                <label for="contact-email">Contact Email</label>
+                <input type="email" name="contact-email" id="contact-email" placeholder="email@company.com" required>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Create Job Vacancy</button>
+                <a href="{{ url_for('home') }}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

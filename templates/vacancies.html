@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Vagas{% endblock %}
+
+{% block content %}
+<section class="search-section">
+    <div class="search-container">
+        <input type="search" name="search" id="search" placeholder="Pesquisar vagas...">
+    </div>
+</section>
+
+<section class="vacancies">
+    {% for i in "1,2,3" %}
+        <div class="card">
+            <img src="https://themosvagas.com.br/wp-content/uploads/2018/11/45844672_194130591511864_7578275738579632128_n.jpg" alt="forLEARN">
+            <div class="card-content">
+                <h4><b>forLEARN</b></h4>
+                <p>Programador PHP(Laravel)</p>
+                <p class="location">Belas, Luanda</p>
+                <p class="salary">AO 150.000,00 - AO 200.000,00</p>
+                <a href="{{ url_for('apply', empresa='forlearn', post='1') }}" class="btn btn-apply">Candidatar-me</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <img src="https://via.placeholder.com/300x200/333333/FFFFFF?text=TECHNOLOGY+CO" alt="Technology Co">
+            <div class="card-content">
+                <h4><b>Technology Co</b></h4>
+                <p>Desenvolvedor Frontend Mobil(Flutter)</p>
+                <p class="location">Benfica, Luanda</p>
+                <p class="salary">AO 150.000,00 - AO 200.000,00</p>
+                <a href="{{ url_for('apply', empresa='technologyco', post='2') }}" class="btn btn-apply">Candidatar-me</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <img src="https://via.placeholder.com/300x200/555555/FFFFFF?text=DATA+SOLUTIONS" alt="Data Solutions">
+            <div class="card-content">
+                <h4><b>Data Solutions</b></h4>
+                <p>Analista de Dados Python</p>
+                <p class="location">Remoto</p>
+                <p class="salary">AO 150.000,00 - AO 200.000,00</p>
+                <a href="{{ url_for('apply', empresa='datasolutions', post='3') }}" class="btn btn-apply">Candidatar-me</a>
+            </div>
+        </div>
+    {% endfor %}
+</section>
+
+{% endblock %}

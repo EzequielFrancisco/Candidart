@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}home{% endblock %}
+
+{% block content %}
+
+    <section class="hero">
+        <h1>Encontre ou Ofereça Oportunidades</h1>
+        <p>Uma plataforma simples para conectar profissionais e empresas</p>
+        <div class="actions">
+            <a href="{{ url_for('candidacy') }}" class="btn btn-primary">Procurar Vagas</a>
+            <a href="{{ url_for('create') }}" class="btn btn-secondary">Criar Vaga</a>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="feature">
+            <img src="https://cdn-icons-png.flaticon.com/512/4419/4419602.png" alt="icone">
+            <h3>Procure Vagas</h3>
+            <p>Encontre oportunidades que combinam com suas habilidades</p>
+        </div>
+        <div class="feature">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSVK0yhWoGI7uOs0dd0eWjlwl5LdzuXM1zp8A&s" alt="icone">
+            <h3>Crie Vagas</h3>
+            <p>Divulgue oportunidades de trabalho para sua empresa</p>
+        </div>
+        <div class="feature">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTTZS2oYlx8u3L32t2dHdYGXQNbw2ksY3c_ig&s" alt="icone">
+            <h3>Processo Simples</h3>
+            <p>Interface intuitiva e direta ao ponto</p>
+        </div>
+    </section>
+
+{% endblock %}
