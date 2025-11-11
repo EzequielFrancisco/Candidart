@@ -13,15 +13,18 @@
                 <li><a href="{{ url_for('home') }}">Home</a></li>
                 <li><a href="{{ url_for('vacancies') }}">Vagas</a></li>
                 <li><a href="{{ url_for('about') }}">Sobre</a></li>
-                {% if sessao %}
-                <label for="menu">USER</label>
-                <select name="Menu" id="menu">
-                    <option value=""><a href="#">Candidaturas</a></option>
-                    <option value=""><a href="#">Log-out</a></option>
-                </select>
+               {% if session.get('username') %}
+                    <li class="dropdown">
+                        <a href="#" class="dropbtn">{{ session.get('username') }}</a>
+                    </li>
+                    <li><a href="#">Candidaturas</a></li>
+                    <li><a href="{{ url_for('logout') }}">Log-out</a></li>
+                       
                 {% else %}
-                <li style="float:right"><a href="#">Login</ali>
+                    <li style="float:right"><a href="{{ url_for('login') }}">Login</a></li>
                 {% endif %}
+
+
             </ul>
         </nav>
     </header>

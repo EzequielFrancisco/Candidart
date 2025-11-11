@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 import sqlite3
 import os
 
@@ -7,11 +7,53 @@ app.secret_key = "hddvdblu-raylesardisc"
 
 @app.route("/")
 def home():
-    return render_template("index.html")
+    return render_template("index.html", session=session)
 
-@app.route("/login")
+@app.route("/login", methods=['GET', 'POST'])
 def login():
-    return"login"
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        # Aqui poderias validar o username/password com o DB
+        if username and password:
+            session['username'] = username
+            flash(f"Bem-vindo, {username}!", "success")
+            return redirect(url_for('home'))
+        else:
+            flash("Preencha todos os campos!", "error")
+            return redirect(url_for('login'))
+
+    # GET request: renderiza formulário HTML simples
+    return '''
+        <h1>Login</h1>
+        <form method="post">
+            <p><input type="text" name="username" placeholder="Nome de utilizador" required>
+            <p><input type="password" name="password" placeholder="Senha" required>
+            <p><input type="submit" value="Login">
+        </form>
+        <a href="{}">Criar conta</a>'''.format(url_for('register'))
+
+@app.route("/register", methods=['GET','POST'])
+def register():
+    if request.method == 'POST':
+        # lógica de criação de conta
+        pass
+    return '''
+        <h1>Login</h1>
+        <form method="post">
+            <p><input type="text" name="username" placeholder="Nome de utilizador" required>
+            <p><input type="password" name="password" placeholder="Senha" required>
+            <p><input type="submit" value="Login">
+        </form>
+        <a href="{}">Criar conta</a>'''.format(url_for('login'))
+
+@app.route("/logout")
+def logout():
+    session.pop('username', None)
+    flash("Sessão terminada!", "info")
+    return redirect(url_for('home'))
+
 
 @app.route("/candidacy")
 def candidacy():
@@ -23,19 +65,16 @@ def apply(empresa, post):
 
 @app.route("/insert", methods=['POST'])
 def insert():
-
     if request.method == 'POST':
         cv = request.files.get('curriculo')
 
-        if cv:
-            # Garante que a pasta 'img' existe
-            os.makedirs("static/cv", exist_ok=True)
-            cv.save(f"static/cv/{cv.filename}")
-            logo_name = cv.filename
-        else:
-            flash("O Curriculo e Obrigatorio")
-            return render_template('home.html')
-        
+        if not cv:
+            flash("O currículo é obrigatório.", "error")
+            return redirect(url_for("home"))
+
+        os.makedirs("static/cv", exist_ok=True)
+        cv.save(f"static/cv/{cv.filename}")
+
         company_name = request.form['empresa']
         post = request.form['post']
         resumo = request.form['resumo']
@@ -44,37 +83,30 @@ def insert():
             conn = sqlite3.connect('candidart.db')
             cursor = conn.cursor()
 
-            # Cria a tabela se não existir
             cursor.execute("""
             CREATE TABLE IF NOT EXISTS candidacy (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 cv TEXT,
                 company_name TEXT,
-                resumo TEXT,
+                resumo TEXT
             )
             """)
 
-            # Inserir dados de forma segura
             cursor.execute("""
-                INSERT INTO vacancies 
-                (cv, company_name, resumo)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, (cv, company_name, resumo))
+                INSERT INTO candidacy (cv, company_name, resumo)
+                VALUES (?, ?, ?)
+            """, (cv.filename, company_name, resumo))
 
             conn.commit()
-
-            flash("Vaga criada com sucesso!", "success")  # tipo: success, error, warning, info
+            flash("Candidatura enviada com sucesso!", "success")
             return redirect(url_for("home"))
             
-
         except Exception as e:
-                return f"Erro no banco de dados: {e}"
+            return f"Erro no banco de dados: {e}"
 
         finally:
-                conn.close()
+            conn.close()
 
-    return render_template("home.html")
-        
 
 @app.route("/vacancies")
 def vacancies():
@@ -163,4 +195,4 @@ def page_not_found(error):
     return render_template('page_not_found.html'), 404
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, use_reloader=True)
