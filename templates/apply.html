@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Candidatura{% endblock %}
+
+{% block content %}
+<section class="create-vacancy">
+    <div class="form-container">
+        <h1>Formulario de candidatura</h1>
+        <form action="{{ url_for('insert') }}" method="post" enctype="multipart/form-data">
+            
+            <!-- Company Logo -->
+            <div class="form-group">
+                <label for="curriculo">Curriculo</label>
+                <input type="file" name="curriculo" id="curriculo" accept="image/*" class="file-input">
+                <div class="file-preview" id="curriculo"></div>
+            </div>
+
+            <!-- Company Information -->
+            <div class="form-group">
+                <label for="resumo">Apresentação</label>
+                 <textarea name="resumo" id="resumo" placeholder="Fale um pouco sobre si (máx. 300 caracteres)" rows="5" maxlength="300" required>
+                    
+                 </textarea>
+            </div>
+
+            <input type="hidden" name="empresa" value="{{ empresa }}">
+            <input type="hidden" name="empresa" value="{{ post }}">
+
+
+            <!-- Submit Button -->
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Aplicar</button>
+                <a href="{{ url_for('home') }}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}
