@@ -61,15 +61,7 @@ def register():
         finally:
             conn.close()
         
-    return '''
-        <h1>Cadasro</h1>
-        <form method="post">
-            <p><input type="text" name="username" placeholder="Nome de utilizador" required>
-            <p><input type="password" name="password" placeholder="Senha" required>
-            <p><input type="text" name="company" placeholder="Nome da empresa" required>
-            <p><input type="submit" value="Login">
-        </form>
-        <a href="{}">Já tem conta</a>'''.format(url_for('login'))
+    return render_template('register.html')
 
 @app.route("/logout")
 def logout():
