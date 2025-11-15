@@ -44,8 +44,7 @@ htmlcov/
 .env.*
 
 # Database files (SQLite)
-*.db
-*.sqlite3
+
 
 # Pastas com imagens e CV
 static/cv/
