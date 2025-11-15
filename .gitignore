@@ -1,0 +1,58 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Virtual environment
+venv/
+env/
+.venv/
+.env/
+
+# Flask instance folder
+instance/
+
+# Pytest cache
+.pytest_cache/
+
+# Mypy cache
+.mypy_cache/
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+.cache
+
+# IDE/editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Logs
+*.log
+
+# MacOS
+.DS_Store
+
+# Environments
+.env
+.env.*
+
+# Database files (SQLite)
+
+
+# Pastas com imagens e CV
+static/cv/
+static/img/
+
+# Node modules (if using frontend)
+node_modules/
+
+# Misc
+*.bak
+*.swp

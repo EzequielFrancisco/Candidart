@@ -35,14 +35,7 @@ def login():
             return render_template('login.html')
 
     # GET request: renderiza formulário HTML simples
-    return '''
-        <h1>Login</h1>
-        <form method="post">
-            <p><input type="text" name="username" placeholder="Nome de utilizador" required>
-            <p><input type="password" name="password" placeholder="Senha" required>
-            <p><input type="submit" value="Login">
-        </form>
-        <a href="{}">Criar conta</a>'''.format(url_for('register'))
+    return render_template('login.html')
 
 @app.route("/register", methods=['GET','POST'])
 def register():
