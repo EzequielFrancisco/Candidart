@@ -17,7 +17,7 @@
                     <li class="dropdown">
                         <a href="#" class="dropbtn">{{ session.get('username') }}</a>
                     </li>
-                    <li><a href="#">Candidaturas</a></li>
+                    <li><a href="{{ url_for('date') }}">Candidaturas</a></li>
                     <li><a href="{{ url_for('logout') }}">Log-out</a></li>
                        
                 {% else %}
@@ -30,13 +30,15 @@
     </header>
     <main>
         {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <ul>
-                {% for category, message in messages %}
-                    <li class="{{ category }}">{{ message }}</li>
-                {% endfor %}
-                </ul>
-            {% endif %}
+        {% if messages %}
+            <div class="flash-container">
+            {% for category, message in messages %}
+                <div class="flash-message {{ category }}">
+                {{ message }}
+                </div>
+            {% endfor %}
+            </div>
+        {% endif %}
         {% endwith %}
 
         {% block content %}

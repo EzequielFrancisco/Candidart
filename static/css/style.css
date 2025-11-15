@@ -121,3 +121,45 @@ textarea{resize:vertical;font-family:Arial,sans-serif;}
     .form-actions{flex-direction:column;}
     .btn{width:100%;}
 }
+
+.flash-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  width: 80%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.flash-message {
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 8px;
+  font-weight: bold;
+  animation: fade-in-out 3s ease forwards;
+}
+
+/* Estilo para tipos de mensagens */
+.flash-message.success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.flash-message.error {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.flash-message.warning {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+@keyframes fade-in-out {
+  0% { opacity: 0; transform: translateY(-10px); }
+  20% { opacity: 1; transform: translateY(0); }
+  80% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-10px); }
+}

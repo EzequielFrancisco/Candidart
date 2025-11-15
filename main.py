@@ -14,15 +14,25 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        try:
+            conn = sqlite3.connect('candidart.db')
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM users WHERE user_name = ? AND senha = ?", (username, password))
+            user = cursor.fetchone()
+            conn.close()
 
-        # Aqui poderias validar o username/password com o DB
-        if username and password:
-            session['username'] = username
-            flash(f"Bem-vindo, {username}!", "success")
-            return redirect(url_for('home'))
-        else:
-            flash("Preencha todos os campos!", "error")
-            return redirect(url_for('login'))
+            # Aqui poderias validar o username/password com o DB
+            if user:
+                session['username'] = user[1]
+                session['company'] = user[3]
+                flash(f"Bem-vindo, {username}!", "success")
+                return redirect(url_for('home'))
+            else:
+                flash("Preencha todos os campos com os dados correctos!", "error")
+                return redirect(url_for('login'))
+        except sqlite3.Error as e:
+            flash("Ocorreu um erro na base de dados: {e}")
+            return render_template('login.html')
 
     # GET request: renderiza formulário HTML simples
     return '''
@@ -37,16 +47,36 @@ def login():
 @app.route("/register", methods=['GET','POST'])
 def register():
     if request.method == 'POST':
-        # lógica de criação de conta
-        pass
+        user_name = request.form['username']
+        senha = request.form['password']
+        company = request.form['company']
+        try:
+            conn = sqlite3.connect('candidart.db')
+            cursor = conn.cursor()
+            cursor.execute("""
+                INSERT INTO users (user_name, senha, company)
+                VALUES (?, ?, ?)
+            """, (user_name, senha, company))
+
+            conn.commit()
+            flash("Registo enviada com sucesso!", "success")
+            return redirect(url_for("login"))
+            
+        except Exception as e:
+            return f"Erro no banco de dados: {e}"
+
+        finally:
+            conn.close()
+        
     return '''
-        <h1>Login</h1>
+        <h1>Cadasro</h1>
         <form method="post">
             <p><input type="text" name="username" placeholder="Nome de utilizador" required>
             <p><input type="password" name="password" placeholder="Senha" required>
+            <p><input type="text" name="company" placeholder="Nome da empresa" required>
             <p><input type="submit" value="Login">
         </form>
-        <a href="{}">Criar conta</a>'''.format(url_for('login'))
+        <a href="{}">Já tem conta</a>'''.format(url_for('login'))
 
 @app.route("/logout")
 def logout():
@@ -107,7 +137,6 @@ def insert():
         finally:
             conn.close()
 
-
 @app.route("/vacancies")
 def vacancies():
     try:
@@ -121,6 +150,28 @@ def vacancies():
     except Exception as e:
         return "Erro algures no banco de dados"
     
+@app.route("/date")
+def date():
+    if 'company' in session:
+        company_name = session['company']
+
+        try:
+            conn = sqlite3.connect('candidart.db')
+            conn.row_factory = sqlite3.Row 
+            cursor = conn.cursor()
+            cursor.execute('SELECT * FROM candidacy WHERE company_name = ?', (company_name,))
+            dates = cursor.fetchall()
+            
+            return render_template("date.html", dates=dates)
+        
+        except Exception as e:
+            return f"Erro no banco de dados: {e}"
+
+    else:
+        flash("Método não permitido", "error")
+        return redirect(url_for('home'))
+
+
 @app.route("/create", methods=['GET', 'POST'])
 def create():
     if request.method == 'POST':
