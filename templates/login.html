@@ -1,15 +1,25 @@
 {% extends "base.html" %}
 
-{% block title %}home{% endblock %}
+{% block title %}Login{% endblock %}
 
 {% block content %}
-
-        <h1>Login</h1>
-        <form action="{{ url_for('login') }}" method="post">
-            <p><input type="text" name="username" placeholder="Nome de utilizador" required>
-            <p><input type="password" name="password" placeholder="Senha" required>
-            <p><input type="submit" value="Login">
-        </form>
-        <a href="{{url_for('register')}}">Criar conta</a>
-
+<div class="login-container">
+    <h1>Login</h1>
+    <form action="{{ url_for('login') }}" method="post" class="login-form">
+        <div class="form-group">
+            <label for="username">Nome de utilizador</label>
+            <input type="text" id="username" name="username" placeholder="Digite o seu nome de utilizador" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Senha</label>
+            <input type="password" id="password" name="password" placeholder="Digite sua senha" required>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn">Login</button>
+        </div>
+    </form>
+    <p class="register-link">
+        Não tem conta? <a href="{{ url_for('register') }}">Criar conta</a>
+    </p>
+</div>
 {% endblock %}
