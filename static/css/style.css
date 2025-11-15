@@ -245,3 +245,6 @@ body {
     text-decoration: underline;
 }
 
+/*Icones*/
+.feature-icon i {font-size: 32px; color: #007BFF;}
+.feature-number {font-size: 18px; color: #007BFF;}

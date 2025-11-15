@@ -7,7 +7,18 @@ app.secret_key = "hddvdblu-raylesardisc"
 
 @app.route("/")
 def home():
-    return render_template("index.html", session=session)
+    try:
+        conn = sqlite3.connect('candidart.db')
+        conn.row_factory = sqlite3.Row 
+        cursor = conn.cursor()
+        cursor.execute('SELECT id FROM users')
+        users = cursor.fetchall()
+
+        return render_template("index.html", session=session, users=users)
+     
+    except Exception as e:
+        return f"Erro algures no banco de dados {e}"
+    
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
