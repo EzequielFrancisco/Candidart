@@ -1,24 +1,29 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
-import sqlite3
 import os
+import psycopg2
+from psycopg2.extras import RealDictCursor
 
 app = Flask(__name__)
 app.secret_key = "hddvdblu-raylesardisc"
 
+# Função para criar ligação à base de dados PostgreSQL
+def get_connection():
+    return psycopg2.connect(
+        os.getenv("DATABASE_URL"),  # URL da base de dados definida como variável de ambiente
+        cursor_factory=RealDictCursor
+    )
+
 @app.route("/")
 def home():
     try:
-        conn = sqlite3.connect('candidart.db')
-        conn.row_factory = sqlite3.Row 
+        conn = get_connection()
         cursor = conn.cursor()
-        cursor.execute('SELECT id FROM users')
+        cursor.execute('SELECT id, user_name, company FROM users')
         users = cursor.fetchall()
-
+        conn.close()
         return render_template("index.html", session=session, users=users)
-     
     except Exception as e:
-        return f"Erro algures no banco de dados {e}"
-    
+        return f"Erro na base de dados: {e}"
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
@@ -26,26 +31,24 @@ def login():
         username = request.form['username']
         password = request.form['password']
         try:
-            conn = sqlite3.connect('candidart.db')
+            conn = get_connection()
             cursor = conn.cursor()
-            cursor.execute("SELECT * FROM users WHERE user_name = ? AND senha = ?", (username, password))
+            cursor.execute("SELECT * FROM users WHERE user_name = %s AND senha = %s", (username, password))
             user = cursor.fetchone()
             conn.close()
 
-            # Aqui poderias validar o username/password com o DB
             if user:
-                session['username'] = user[1]
-                session['company'] = user[3]
+                session['username'] = user['user_name']
+                session['company'] = user['company']
                 flash(f"Bem-vindo, {username}!", "success")
                 return redirect(url_for('home'))
             else:
-                flash("Preencha todos os campos com os dados correctos!", "error")
+                flash("Preencha todos os campos com os dados corretos!", "error")
                 return redirect(url_for('login'))
-        except sqlite3.Error as e:
-            flash("Ocorreu um erro na base de dados: {e}")
+        except Exception as e:
+            flash(f"Ocorreu um erro na base de dados: {e}", "error")
             return render_template('login.html')
 
-    # GET request: renderiza formulário HTML simples
     return render_template('login.html')
 
 @app.route("/register", methods=['GET','POST'])
@@ -55,22 +58,18 @@ def register():
         senha = request.form['password']
         company = request.form['company']
         try:
-            conn = sqlite3.connect('candidart.db')
+            conn = get_connection()
             cursor = conn.cursor()
             cursor.execute("""
                 INSERT INTO users (user_name, senha, company)
-                VALUES (?, ?, ?)
+                VALUES (%s, %s, %s)
             """, (user_name, senha, company))
-
             conn.commit()
-            flash("Registo enviada com sucesso!", "success")
+            conn.close()
+            flash("Registo enviado com sucesso!", "success")
             return redirect(url_for("login"))
-            
         except Exception as e:
             return f"Erro no banco de dados: {e}"
-
-        finally:
-            conn.close()
         
     return render_template('register.html')
 
@@ -80,106 +79,87 @@ def logout():
     flash("Sessão terminada!", "info")
     return redirect(url_for('home'))
 
-
 @app.route("/candidacy")
 def candidacy():
     return render_template("candidacy.html")
 
 @app.route("/apply/<empresa>/<post>")
 def apply(empresa, post):
-    return render_template("apply.html",empresa=empresa,post=post)
+    return render_template("apply.html", empresa=empresa, post=post)
 
 @app.route("/insert", methods=['POST'])
 def insert():
-    if request.method == 'POST':
-        cv = request.files.get('curriculo')
+    cv = request.files.get('curriculo')
+    if not cv:
+        flash("O currículo é obrigatório.", "error")
+        return redirect(url_for("home"))
 
-        if not cv:
-            flash("O currículo é obrigatório.", "error")
-            return redirect(url_for("home"))
+    os.makedirs("static/cv", exist_ok=True)
+    cv.save(f"static/cv/{cv.filename}")
 
-        os.makedirs("static/cv", exist_ok=True)
-        cv.save(f"static/cv/{cv.filename}")
+    company_name = request.form['empresa']
+    post = request.form['post']
+    resumo = request.form['resumo']
 
-        company_name = request.form['empresa']
-        post = request.form['post']
-        resumo = request.form['resumo']
-
-        try:
-            conn = sqlite3.connect('candidart.db')
-            cursor = conn.cursor()
-
-            cursor.execute("""
-            CREATE TABLE IF NOT EXISTS candidacy (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                cv TEXT,
-                company_name TEXT,
-                resumo TEXT
-            )
-            """)
-
-            cursor.execute("""
-                INSERT INTO candidacy (cv, company_name, resumo)
-                VALUES (?, ?, ?)
-            """, (cv.filename, company_name, resumo))
-
-            conn.commit()
-            flash("Candidatura enviada com sucesso!", "success")
-            return redirect(url_for("home"))
-            
-        except Exception as e:
-            return f"Erro no banco de dados: {e}"
-
-        finally:
-            conn.close()
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS candidacy (
+            id SERIAL PRIMARY KEY,
+            cv TEXT,
+            company_name TEXT,
+            resumo TEXT
+        )
+        """)
+        cursor.execute("""
+            INSERT INTO candidacy (cv, company_name, resumo)
+            VALUES (%s, %s, %s)
+        """, (cv.filename, company_name, resumo))
+        conn.commit()
+        conn.close()
+        flash("Candidatura enviada com sucesso!", "success")
+        return redirect(url_for("home"))
+    except Exception as e:
+        return f"Erro no banco de dados: {e}"
 
 @app.route("/vacancies")
 def vacancies():
     try:
-        conn = sqlite3.connect('candidart.db')
-        conn.row_factory = sqlite3.Row 
+        conn = get_connection()
         cursor = conn.cursor()
         cursor.execute('SELECT * FROM vacancies')
         vagas = cursor.fetchall()
-        return render_template("vacancies.html",vagas=vagas)
-     
+        conn.close()
+        return render_template("vacancies.html", vagas=vagas)
     except Exception as e:
-        return "Erro algures no banco de dados"
-    
+        return f"Erro na base de dados: {e}"
+
 @app.route("/date")
 def date():
     if 'company' in session:
         company_name = session['company']
-
         try:
-            conn = sqlite3.connect('candidart.db')
-            conn.row_factory = sqlite3.Row 
+            conn = get_connection()
             cursor = conn.cursor()
-            cursor.execute('SELECT * FROM candidacy WHERE company_name = ?', (company_name,))
+            cursor.execute('SELECT * FROM candidacy WHERE company_name = %s', (company_name,))
             dates = cursor.fetchall()
-            
+            conn.close()
             return render_template("date.html", dates=dates)
-        
         except Exception as e:
             return f"Erro no banco de dados: {e}"
-
     else:
         flash("Método não permitido", "error")
         return redirect(url_for('home'))
-
 
 @app.route("/create", methods=['GET', 'POST'])
 def create():
     if request.method == 'POST':
         logo = request.files.get('logo')
-
+        logo_name = logo.filename if logo else "padrao.png"
         if logo:
-            # Garante que a pasta 'img' existe
             os.makedirs("static/img", exist_ok=True)
-            logo.save(f"static/img/{logo.filename}")
-            logo_name = logo.filename
-        else:
-            logo_name = "padrao.png"
+            logo.save(f"static/img/{logo_name}")
 
         company_name = request.form['company-name']
         job_title = request.form['job-title']
@@ -192,13 +172,11 @@ def create():
         contact_email = request.form['contact-email']
 
         try:
-            conn = sqlite3.connect('candidart.db')
+            conn = get_connection()
             cursor = conn.cursor()
-
-            # Cria a tabela se não existir
             cursor.execute("""
             CREATE TABLE IF NOT EXISTS vacancies (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                id SERIAL PRIMARY KEY,
                 logo TEXT,
                 company_name TEXT,
                 job_title TEXT,
@@ -211,25 +189,17 @@ def create():
                 contact_email TEXT
             )
             """)
-
-            # Inserir dados de forma segura
             cursor.execute("""
                 INSERT INTO vacancies 
                 (logo, company_name, job_title, job_description, location, job_type, salary_min, salary_max, currency, contact_email)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """, (logo_name, company_name, job_title, job_description, location, job_type, salary_min, salary_max, currency, contact_email))
-
             conn.commit()
-
-            flash("Vaga criada com sucesso!", "success")  # tipo: success, error, warning, info
+            conn.close()
+            flash("Vaga criada com sucesso!", "success")
             return redirect(url_for("home"))
-            
-
         except Exception as e:
             return f"Erro no banco de dados: {e}"
-
-        finally:
-            conn.close()
 
     return render_template("create.html")
 
