@@ -13,6 +13,21 @@ def get_connection():
         cursor_factory=RealDictCursor
     )
 
+@app.route("/test_db/<senha_secreta>")
+def test_db(enha_secreta):
+    if enha_secreta == "3z3qui3lfr4ncisc0":
+
+        try:
+            conn = get_connection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT 1")
+            result = cursor.fetchone()
+            conn.close()
+            return f"Conexão com PostgreSQL OK! Resultado: {result}"
+        except Exception as e:
+            return f"Erro ao ligar à base de dados: {e}"
+
+
 @app.route("/")
 def home():
     try:
