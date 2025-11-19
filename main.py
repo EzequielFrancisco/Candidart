@@ -90,12 +90,14 @@ def insert():
     company_name = request.form['empresa']
     post = request.form['post']
     resumo = request.form['resumo']
+    contacto = request.form['contacto']
 
     try:
         supabase.table("candidacy").insert({
             "cv": cv.filename,
             "company_name": company_name,
-            "resumo": resumo
+            "resumo": resumo,
+            "contacto":contacto
         }).execute()
         flash("Candidatura enviada com sucesso!", "success")
         return redirect(url_for("home"))
