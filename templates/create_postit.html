@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Crear Trabalho{% endblock %}
+
+{% block content %}
+<section class="create-vacancy">
+    <div class="form-container">
+        <h1>Create New Postit-It</h1>
+        <form action="{{ url_for('create') }}" method="post" enctype="multipart/form-data">
+            
+            <!-- Post description -->
+            <div class="form-group">
+                <label for="title">Titulo</label>
+                <input name="title" id="title" placeholder="ex: Aluga-se ou vende-se etc.." rows="5" required></intput>
+            </div>
+            
+            <!-- Post description -->
+            <div class="form-group">
+                <label for="postit-description">Postit-It</label>
+                <textarea name="postit-description" id="postit-description" placeholder="Cria a descrição do seu reclame..." rows="5" required></textarea>
+            </div>
+
+
+            <!-- Contact Information -->
+            <div class="form-group">
+                <label for="contacto">Contactos</label>
+                <input type="text" name="contacto" id="contacto" placeholder="ex: 945347861" required>
+                <br>
+                <input type="text" name="contacto_2" id="contacto" placeholder="alterativo">
+            </div>
+
+            <!-- Submit Button -->
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Create Postit</button>
+                <a href="{{ url_for('home') }}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

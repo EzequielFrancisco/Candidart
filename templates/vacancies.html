@@ -5,7 +5,10 @@
 {% block content %}
 <section class="search-section">
     <div class="search-container">
-        <input type="search" name="search" id="search" placeholder="Pesquisar vagas...">
+         <form action="{{ url_for('search') }}" method="get">
+            <input type="hidden" name="type" value="vacancies">
+            <input type="search" name="search" id="search" placeholder="Pesquisar vagas">
+         </form>
     </div>
 </section>
 
