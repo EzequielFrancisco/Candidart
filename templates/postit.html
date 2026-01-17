@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Post-It{% endblock %}
+
+{% block content %}
+<section class="search-section">
+    <div class="search-container">
+        <form action="{{ url_for('search') }}" method="get">
+            <input type="hidden" name="type" value="postit">
+            <input type="search" name="search" id="search" placeholder="Pesquisar reclame">
+        </form>
+        
+    </div>
+</section>
+
+<section class="vacancies">
+    {% for i in postits %}
+        <div class="card">
+            <div class="card-content-postit">
+                <h4><b>{{ i['title'] }}</b></h4>
+                <p class="creted_at">{{ i['description'] }}</p>
+                <p class="text-description">publicado em:{{ i['created_at'][:10] }}</p>
+                <button href="#" class="btn btn-whatsapp">
+                    <i class="bi bi-whatsapp"></i>  Contactar:
+                    {{ i['contacto'] }} / {{ i['contacto_2'] or '' }}
+                </button>
+            </div>
+        </div>
+    {% endfor %}
+</section>
+
+{% endblock %}

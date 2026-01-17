@@ -8,6 +8,7 @@ ul{list-style:none;margin:0;padding:0;overflow:hidden;background-color:#333333;}
 ul li{float:left;}
 ul li a{display:block;color:white;text-align:center;padding:14px 16px;text-decoration:none;}
 ul li a:hover{background-color:#111111;}
+
 /* Dropdown menu */
 ul li.dropdown {position: relative;display: inline-block; float:right; }
 ul li.dropdown .dropbtn {cursor: pointer;color: white;text-decoration: none;padding: 14px 16px;display: block;}
@@ -65,7 +66,7 @@ footer{background-color:#333;color:white;padding:20px 0;margin-top:40px; text-al
 .vacancies{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:30px;padding:40px 20px;max-width:1200px;margin:0 auto;}
 
 /* CARDS */
-.card{box-shadow:0 4px 8px 0 rgba(0,0,0,0.1);transition:0.3s;border-radius:8px;overflow:hidden;background:white;}
+.card{box-shadow:0 4px 8px 0 rgba(0,0,0,0.1);transition:0.3s;border-radius:8px;overflow:hidden;background:white; margin:3px;}
 .card:hover{box-shadow:0 8px 16px 0 rgba(0,0,0,0.2);transform:translateY(-5px);}
 .card img{width:100%;height:200px;object-fit:cover;}
 .card-content{padding:20px;}
@@ -74,9 +75,17 @@ footer{background-color:#333;color:white;padding:20px 0;margin-top:40px; text-al
 .location{color:#888;font-size:0.9rem;}
 .salary{color:#2e7d32;font-weight:bold;}
 
+.card-content-postit h4{margin:0 0 10px 0;color:#333;font-size:1.2rem; text-align: center;}
+.card-content-postit{color:#333;font-size:2rem; text-align: center;}
+.text-description{margin:15px 0;color:#555;font-size:1rem;}
+
 /* BOTÃO CANDIDATAR */
 .btn-apply{display:block;width:100%;padding:12px;background-color:#333;color:white;text-decoration:none;border-radius:6px;text-align:center;margin-top:15px;font-weight:bold;transition:background-color 0.3s;}
 .btn-apply:hover{background-color:#111;}
+
+/*Botao contactar*/
+.btn-whatsapp{display:block;width:100%;padding:12px;background-color:#25D366;color:white;text-decoration:none;border-radius:6px;text-align:center;margin-top:15px;font-weight:bold;transition:background-color 0.3s;}
+.btn-whatsapp:hover{background-color:#1DA851;}
 
 /* RESPONSIVIDADE */
 @media (max-width:768px){

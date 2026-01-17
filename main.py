@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 import os
 from supabase import create_client
+from functools import wraps
 
 app = Flask(__name__)
 app.secret_key = "hddvdblu-raylesardisc"
@@ -21,10 +22,20 @@ def home():
     except Exception as e:
         return f"Erro na base de dados: {e}"
 
+# --- LOGIN REQUIRED DECORATOR ---
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if "username" not in session:
+            return redirect(url_for("login"))
+        return f(*args, **kwargs)
+    return decorated_function
+
 # --- LOGIN ---
 @app.route("/login", methods=['GET','POST'])
 def login():
     if request.method == "POST":
+    
         username = request.form['username']
         password = request.form['password']
         try:
@@ -73,11 +84,15 @@ def logout():
 def candidacy():
     return render_template("candidacy.html")
 
+
 @app.route("/apply/<empresa>/<post>")
+@login_required
 def apply(empresa, post):
     return render_template("apply.html", empresa=empresa, post=post)
 
+
 @app.route("/insert", methods=["POST"])
+@login_required
 def insert():
     cv = request.files.get("curriculo")
     if not cv:
@@ -104,6 +119,25 @@ def insert():
     except Exception as e:
         return f"Erro no banco de dados: {e}"
 
+@app.route("/search", methods=["GET"])
+def search():
+    query = request.args.get("search", "")
+    search_type = request.args.get("type", "")
+    try:
+
+       match search_type:
+        case "vacancies": 
+            resp = supabase.table("vacancies").select("*").ilike("company_name", f"%{query}%").execute()
+            vagas = resp.data
+            return render_template("postit.html", vagas=vagas)
+        case "postit":
+            resp = supabase.table("postit").select("*").ilike("description", f"%{query}%").execute()
+            postits = resp.data 
+            return render_template("postit.html", postits=postits)
+
+    except Exception as e:
+        return f"Erro na base de dados: {e}" 
+
 # --- VACANCIES ---
 @app.route("/vacancies")
 def vacancies():
@@ -111,6 +145,17 @@ def vacancies():
         resp = supabase.table("vacancies").select("*").execute()
         vagas = resp.data
         return render_template("vacancies.html", vagas=vagas)
+    except Exception as e:
+        return f"Erro na base de dados: {e}"
+
+# --- POST-IT ---
+@app.route("/postit")
+def postit():
+    try:
+        resp = supabase.table("postit").select("*").execute()
+        postits = resp.data
+        print(postits)
+        return render_template("postit.html", postits=postits)
     except Exception as e:
         return f"Erro na base de dados: {e}"
 
@@ -130,6 +175,7 @@ def date():
 
 # --- CREATE JOB ---
 @app.route("/create", methods=["GET","POST"])
+@login_required
 def create():
     if request.method == "POST":
         logo = request.files.get("logo")
@@ -166,6 +212,31 @@ def create():
         except Exception as e:
             return f"Erro no banco de dados: {e}"
     return render_template("create.html")
+
+# --- CREATE JOB ---
+@app.route("/create_postit", methods=["GET","POST"])
+@login_required
+def create_postit():
+    if request.method == "POST":
+        
+        title = request.form['title']
+        postit_description = request.form['postit-description']
+        contacto = request.form['contacto']
+        contacto_2 = request.form['contacto_2']
+
+        try:
+            supabase.table("postit").insert({
+                "title": title,
+                "description": postit_description,
+                "contacto": contacto,
+                "contacto_2": contacto_2
+            }).execute()
+            flash("Vaga criada com sucesso!", "success")
+            return redirect(url_for("home"))
+        except Exception as e:
+            return f"Erro no banco de dados: {e}"
+    return render_template("create_postit.html")
+
 
 # --- ABOUT ---
 @app.route("/about")
