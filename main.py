@@ -231,7 +231,7 @@ def create_postit():
                 "contacto": contacto,
                 "contacto_2": contacto_2
             }).execute()
-            flash("Vaga criada com sucesso!", "success")
+            flash("Reclame criado com sucesso!", "success")
             return redirect(url_for("home"))
         except Exception as e:
             return f"Erro no banco de dados: {e}"
